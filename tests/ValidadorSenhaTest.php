@@ -3,7 +3,6 @@
 use PHPUnit\Framework\TestCase;
 
 require 'src/Usuario.php';
-require 'src/ValidadorSenha.php';
 
 class ValidadorSenhaTest extends TestCase {
 
@@ -19,11 +18,11 @@ class ValidadorSenhaTest extends TestCase {
      * Comparação: assertTrue.
      */
 
-     public function testTemTamanhoMinimo() {
+    public function testTemTamanhoMinimo() {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("A senha deve ter mais de 8 caracteres.");
         
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "12345678");
         $validador->temTamanhoMinimo();
     }
@@ -32,7 +31,7 @@ class ValidadorSenhaTest extends TestCase {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("A senha deve conter letras e números.");
         
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "somenteletras");
         $validador->temLetrasENumeros();
 
@@ -44,7 +43,7 @@ class ValidadorSenhaTest extends TestCase {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("A senha deve conter pelo menos uma letra maiúscula.");
         
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "senha123");
         $validador->temLetraMaiuscula();
     }
@@ -53,8 +52,8 @@ class ValidadorSenhaTest extends TestCase {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("A senha deve conter pelo menos um caractere especial (!, @, #, $, %, &, (, ), [, ], {, }, <, >).");
         
-        $usuario = new Usuario("usuario", "12/03/1990");
-        $validador = new ValidadorSenha($usuario, "Senha123");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
+        $validador = new ValidadorSenha($usuario, "SenhaValida@123");
         $validador->temCaractereEspecial();
     }
 
@@ -62,7 +61,7 @@ class ValidadorSenhaTest extends TestCase {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("A senha não pode conter o nome de usuário.");
         
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "usuario123@");
         $validador->naoContemUsername();
     }
@@ -71,7 +70,7 @@ class ValidadorSenhaTest extends TestCase {
         $this->expectException(Exception::class);
         $this->expectExceptionMessage("A senha não pode conter a data de nascimento.");
         
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "12/03/1990@");
         $validador->naoContemDataNascimento();
 
@@ -80,7 +79,7 @@ class ValidadorSenhaTest extends TestCase {
     }
 
     public function testValidaSenhaValida() {
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "SenhaValida@123");
         $this->assertTrue($validador->validaSenha());
     }
@@ -88,14 +87,14 @@ class ValidadorSenhaTest extends TestCase {
     public function testValidaSenhaInvalida() {
         $this->expectException(Exception::class);
         
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "senha123");
         $validador->validaSenha();
     }
 
     public function testContaCriteriosAtendidos() {
         $expected = 6;
-        $usuario = new Usuario("usuario", "12/03/1990");
+        $usuario = Usuario::makeNew("usuario", "12/03/1990");
         $validador = new ValidadorSenha($usuario, "Senha@12345");
 
         $this->assertEquals($expected, $validador->contaCriteriosAtendidos(), "A senha atingiu $expected critérios.");

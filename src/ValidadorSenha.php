@@ -12,7 +12,7 @@ class ValidadorSenha {
     // Usados para expectException() e expectExceptionMessage();
     public function temTamanhoMinimo() {
         if (strlen($this->senha) <= 8) {
-            throw new Exception("A senha deve ter mais de 8 caracteres.");
+            throw new Exception("A senha deve ter no mínimo 8 caracteres.");
         }
         return true;
     }
@@ -32,7 +32,7 @@ class ValidadorSenha {
     }
 
     public function temCaractereEspecial() {
-        if (!preg_match('/[!@#\$%\&\(\)\[\]\{\}<>\]/', $this->senha)) {
+        if (!preg_match('/[!@#\$%\&\(\)\[\]\{\}<>\]]/', $this->senha)) {
             throw new Exception("A senha deve conter pelo menos um caractere especial (!, @, #, $, %, &, (, ), [, ], {, }, <, >).");
         }
         return true;

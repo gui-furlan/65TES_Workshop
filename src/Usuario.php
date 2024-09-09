@@ -1,15 +1,36 @@
 <?php
 
+use PDO;
+
+require "src/ValidadorSenha.php";
+
 class Usuario {
  
     private $username;
     private $senha;
     private $dataNascimento;
 
-    public function __construct($username, $dataNascimento) {
-        $this->username = $username;
-        $this->senha = "";
-        $this->dataNascimento = $dataNascimento;
+    private PDO $pdo;
+
+    public function __construct() {
+
+    }
+
+    public static function makeNew($username, $dataNascimento) {
+        $usuario = new Usuario();
+        $usuario->username = $username;
+        $usuario->senha = "";
+        $usuario->dataNascimento = $dataNascimento;
+        return $usuario;
+    }
+
+    public static function makeNewWithDB($username, $dataNascimento, PDO $pdo) {
+        $usuario = new Usuario();
+        $usuario->username = $username;
+        $usuario->senha = "";
+        $usuario->dataNascimento = $dataNascimento;
+        $usuario->pdo = $pdo;
+        return $usuario;
     }
 
     public function getUsername() {
@@ -25,10 +46,33 @@ class Usuario {
 
         if ($validador->validaSenha() == true) {
             $this->senha = $senha;
+            $this->lancarLog();
+            return true;
+        } else {
+            return false;
         }
+    }
 
-        // lança log de troca de senha
-        // este é o teste do banco de dados.
+    public function criarTabelaLogTrocaSenha() {
+        $query = "
+            CREATE TABLE IF NOT EXISTS password_log (
+                id SERIAL PRIMARY KEY,
+                username varchar(255),
+                data_hora TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        ";
+
+        $this->pdo->query($query);
+    }
+
+    public function lancarLog() {
+        $this->criarTabelaLogTrocaSenha();
+
+        $query = "
+            INSERT INTO password_log (username) VALUES ('$this->username');
+        ";
+
+        $this->pdo->query($query);
     }
 
 }
